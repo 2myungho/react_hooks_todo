@@ -17,9 +17,7 @@ export default function TodoSearch ({onTodoSearch, onTodoSearch_ch}) {
         onTodoSearch(value);
         setValue('')
     }
-    const onExit = () => {
-        onTodoSearch_ch()
-    }
+    const onExit = () => {onTodoSearch_ch()}
     
     return (
         <Form> 

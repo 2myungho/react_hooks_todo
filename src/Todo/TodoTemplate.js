@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useState, useEffect, useCallback } from 'react'
 import PropTypes from "prop-types";
 import { Container, Header } from 'semantic-ui-react'
 import TodoInput from './TodoInput'
@@ -18,18 +18,18 @@ export default function TodoTemplate() {
     ])
     const [search_todos, setSearch_todos] = useState([])
     const [search_ch, setSearch_ch] = useState(false);
-    let [id, setId] = useState(3)
-    const [dropdown_value, setDropdown_value] = useState("all");
+    let [id, setId] = useState(todos.length+1)
 
-    localStorage.setItem('todos', JSON.stringify(todos))
-    const todos_local = localStorage.getItem("todos");
-    console.log(todos_local)
-    
     const onTodoAdd = (value) => {
         const todoObj = [{id: id, text: value, check: false}]
         setTodos(todos.concat(todoObj))
         setId(id+1)
+        onLS()
     }
+
+    const onLS = useCallback(() => {
+        localStorage.setItem('todos', JSON.stringify(todos))
+    },[todos])
 
     const onTodoRemove = (id) => {
         setTodos(todos.filter( todo => todo.id !== id))
@@ -37,33 +37,39 @@ export default function TodoTemplate() {
 
     const onTodoModify = (todoObj) => {
         setTodos(todos.map(todo => todo.id === todoObj.id ? todoObj : todo))
+        // setSearch_todos(todos.map(todo => todo.id === todoObj.id ? todoObj : todo))
     }
 
     const onTodoSearch = (value) => {
+        console.log(value)
         setSearch_ch(true);
         setSearch_todos(todos.filter( todo => todo.text.includes(value)))
+        console.log(search_todos)
     }
 
     const onTodoSearch_ch = () => {
         setSearch_ch(false);
     }
-    
-    const onTodo_dropdown = (value) => {
-        setDropdown_value(value)
-    }
+    useEffect(() => {
+        const todos_local = localStorage.getItem("todos");
+        if(todos_local !== null) {
+            setTodos(JSON.parse(todos_local))
+            setId(JSON.parse(todos_local).length +1)
+        }
+    },[])
 
     useEffect(() => {
-       
-        
-        
-    },[])
+        onLS();
+    },[todos,onLS])
 
     return (
         <Container text style={Template.wrap}>
-            <Header as='h2'>명호의 TodoList {todos[0].text}</Header>
-            <TodoHeader 
-                todos={todos}
-            />
+            <Header as='h2'>명호의 TodoList </Header>
+            {search_ch  
+            ? <TodoHeader todos={search_todos}/>
+            : <TodoHeader todos={todos}/>
+            }
+            
             <TodoSearch 
                 onTodoSearch={onTodoSearch}
                 onTodoSearch_ch={onTodoSearch_ch}
@@ -77,13 +83,11 @@ export default function TodoTemplate() {
             : <>
                 <TodoInput 
                     onTodoAdd={onTodoAdd}
-                    onTodo_dropdown={onTodo_dropdown}
                 />
                 <TodoList 
                     todos={todos}
                     onTodoRemove={onTodoRemove}
                     onTodoModify={onTodoModify}
-                    dropdown_value={dropdown_value}
                 />
             </>
             }

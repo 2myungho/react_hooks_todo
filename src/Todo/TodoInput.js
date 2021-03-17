@@ -4,22 +4,35 @@ import { Form, Dropdown } from 'semantic-ui-react'
 
 TodoInput.propTypes = {
     onTodoAdd: PropTypes.func.isRequired,
-    onTodo_dropdown: PropTypes.func.isRequired,
 }
 
 export default function TodoInput({
         onTodoAdd,
-        onTodo_dropdown
     }) {
     const [value, setValue] = useState('');
+    const [value_ch, setValue_ch] = useState('all')
 
-    const onChange = (e) => setValue(e.target.value);
+    const onChange = (e) => {
+        const curVlaue = e.target.value
+        const newValue = curVlaue;
+        if(value_ch === 'all'){
+            setValue(newValue);
+        }else if(value_ch === 'string'){
+            const newValue = curVlaue.replace(/[0-9]/g, '')
+            setValue(newValue)
+        }else if(value_ch === 'num'){
+            const newValue = curVlaue.replace(/[^0-9]/g, '')
+            setValue(newValue)
+        }
+    }
     const onSubmit = (e) => {
         e.preventDefault();
         onTodoAdd(value)
         setValue('')
     }
-    const onDropdown = (e,d) => {onTodo_dropdown(d.value)}
+    const onDropdown = (e,d) => {
+        setValue_ch(d.value);
+    }
 
     return (
         <Form onSubmit={onSubmit}> 
@@ -36,6 +49,7 @@ export default function TodoInput({
                     options={options} 
                     selection
                     onChange={onDropdown}
+                    defaultValue={options[0].value}
                 />
             </Form.Group>
         </Form>
@@ -45,5 +59,5 @@ export default function TodoInput({
 const options = [
     { key: 1, text:"전체", value: 'all' },
     { key: 2, text:"문자", value: 'string' },
-    { key: 3, text:"숫자", value: 'int' },
+    { key: 3, text:"숫자", value: 'num' },
   ]

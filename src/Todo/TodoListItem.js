@@ -13,7 +13,7 @@ export default function TodoListItem({
         onTodoRemove,
         onTodoModify
     }) {
-
+        console.log(todo)
     const [modify_ch, setModify_ch] = useState(true);
     const [value, setValue] = useState(todo.text);
     const [todoObj, setTodoObj] = useState(todo);
@@ -22,13 +22,13 @@ export default function TodoListItem({
     const onClick_Modify_ch = () => {setModify_ch(!modify_ch)}
 
     const onChange = (e) => setValue(e.target.value);
-    const onSubmit = () => {
+    const onConfirm = () => {
         setTodoObj({
             ...todoObj,
             text: value
         })
         onClick_Modify_ch();
-        console.log(todoObj)
+        onTodoModify(todoObj);
     }
 
     const onClick_check = () => {
@@ -41,7 +41,6 @@ export default function TodoListItem({
 
     useEffect(() => {
         onTodoModify(todoObj);
-        console.log(todoObj)
     },[todoObj])
 
     return (
@@ -61,17 +60,17 @@ export default function TodoListItem({
                 </List.Content>
                 }
                 {!todoObj.check
-                    ? <Checkbox label={value} onClick={onClick_check} checked={todoObj.check}
+                    ? <Checkbox label={todo.text} onClick={onClick_check} checked={todoObj.check}
                         style={{display:'inline-block', margin:'10px 0'}}
                     />
-                    : <Checkbox label={value} onClick={onClick_check} checked={todoObj.check}
+                    : <Checkbox label={todo.text} onClick={onClick_check} checked={todoObj.check}
                         style={{display:'inline-block', margin:'10px 0', textDecoration:'line-through', color:'#000'}}
                     />
                 }
                 
             </>
             : 
-            <Form onSubmit={onSubmit}> 
+            <Form onSubmit={onConfirm}> 
                 <Form.Group>
                     <Input 
                         placeholder="Todo를 입력하세요!"

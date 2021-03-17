@@ -1,8 +1,11 @@
-import React from 'react'
-import TodoTemplate from './Todo/TodoTemplate';
-import todoData from './todoData';
+import React from "react";
+// import Counter_reducer from './Counter_reducer'
+import TodoTemplate from "./Todo/TodoTemplate";
 
 export default function App() {
-  return <TodoTemplate todos={todoData} />;
+  return (
+    <div>
+      <TodoTemplate />
+    </div>
+  );
 }
-
