@@ -1,6 +1,5 @@
 import React from "react";
-// import Counter_reducer from './Counter_reducer'
-import TodoTemplate from "./Todo/TodoTemplate";
+import TodoTemplate from "./Todo/container/TodoTemplate";
 
 export default function App() {
   return (
