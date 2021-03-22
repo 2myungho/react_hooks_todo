@@ -5,22 +5,33 @@ import TodoInput from "../component/TodoInput";
 import TodoList from "../component/TodoList";
 import TodoHeader from "../component/TodoHeader";
 import TodoSearch from "../component/TodoSearch";
+import { useDispatch, useSelector } from "react-redux";
+import { setTodos, setTodoValue } from "../module";
 
 TodoTemplate.propTypes = {
   todos: PropTypes.array.isRequired,
 };
 
 export default function TodoTemplate() {
-  const [todos, setTodos] = useState([]);
+  const dispatch = useDispatch();
+
+  const todoValue = useSelector((state) => state.todo.todoValue);
+  const todos = useSelector((state) => state.todo.todos);
+
+  const onTodoValue = (value) => {
+    if (value !== todoValue) {
+      dispatch(setTodoValue(value));
+    }
+  };
+
+  // const [todos, setTodos] = useState([]);
   const [search_todos, setSearch_todos] = useState([]);
   const [search_ch, setSearch_ch] = useState(false);
   let [id, setId] = useState(todos.length + 1);
 
-  console.log(search_todos);
-
-  const onTodoAdd = (value) => {
-    const todoObj = [{ id: id, text: value, check: false }];
-    setTodos(todos.concat(todoObj));
+  const onTodoAdd = (todoValue) => {
+    const todoObj = [{ id: id, text: todoValue, check: false }];
+    dispatch(setTodos(todos.concat(todoObj)));
     setId(id + 1);
     onLS();
   };
@@ -30,11 +41,13 @@ export default function TodoTemplate() {
   }, [todos]);
 
   const onTodoRemove = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+    dispatch(setTodos(todos.filter((todo) => todo.id !== id)));
   };
 
   const onTodoModify = (todoObj) => {
-    setTodos(todos.map((todo) => (todo.id === todoObj.id ? todoObj : todo)));
+    dispatch(
+      setTodos(todos.map((todo) => (todo.id === todoObj.id ? todoObj : todo)))
+    );
     //todos.map((todo) => (todo.id === todoObj.id ? todoObj : todo))
   };
 
@@ -50,7 +63,7 @@ export default function TodoTemplate() {
   useEffect(() => {
     const todos_local = localStorage.getItem("todos");
     if (todos_local !== null) {
-      setTodos(JSON.parse(todos_local));
+      dispatch(setTodos(JSON.parse(todos_local)));
       setId(JSON.parse(todos_local).length + 1);
     }
   }, []);
@@ -81,7 +94,11 @@ export default function TodoTemplate() {
 
       {!search_ch && (
         <>
-          <TodoInput onTodoAdd={onTodoAdd} />
+          <TodoInput
+            onTodoAdd={onTodoAdd}
+            onTodoValue={onTodoValue}
+            todoValue={todoValue}
+          />
           <TodoList
             todos={todos}
             onTodoRemove={onTodoRemove}
